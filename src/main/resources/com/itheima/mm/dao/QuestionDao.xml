@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.mm.dao.QuestionDao">
+    <select id="findCountByCourseId" resultType="java.lang.Long">
+        select count(id) from t_question where courseId=#{id}
+    </select>
+    <sql id="select_where">
+        <if test="queryParams != null">
+            <if test="queryParams.courseId != null">
+                and courseId=#{queryParams.courseId}
+            </if>
+
+            <if test="queryParams.difficulty != null">
+                and difficulty=#{queryParams.difficulty}
+            </if>
+
+            <if test="queryParams.type != null">
+                and type=#{queryParams.type}
+            </if>
+
+            <if test="queryParams.keyWord != null">
+                and subject like "%"#{queryParams.keyWord}"%"
+            </if>
+        </if>
+    </sql>
+    <select id="findBasicCount" parameterType="QueryPageBean" resultType="long">
+        select count(id) from t_question where isClassic=0
+        <include refid="select_where"></include>
+    </select>
+    <select id="findBasicList" resultType="com.itheima.mm.pojo.Question">
+        select
+        tq.id,
+        tq.id+10000 number,
+        tq.type,
+        tq.difficulty,
+        tq.subject,
+        tq.createDate,
+        (select name from t_course where id=tq.courseId) courseName,
+        (select username from t_user where id=tq.userId) creator,
+        (select count(id) from tr_member_question WHERE questionId=tq.id) usedQty
+        from
+        t_question tq
+        where isClassic=0
+        <include refid="select_where"></include>
+
+        limit #{offset},#{pageSize}
+    </select>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.mm.dao.CourseDao">
+
+   <insert id="addCourse" parameterType="Course">
+        insert into t_course (name,createDate,isShow,userId,orderNo)
+        values (#{name},#{createDate},#{isShow},#{userId},#{orderNo})
+    </insert>
+    <update id="update">
+       update t_course set name=#{name},isShow=#{isShow} where id=#{id}
+    </update>
+    <delete id="deleteById">
+        delete  from t_course where id=#{id}
+    </delete>
+
+    <select id="findByName" parameterType="string" resultType="com.itheima.mm.pojo.Course">
+        select * from t_course
+
+    </select>
+
+    <sql id="select_where">
+        <where>
+            <if test="queryParams != null">
+                <if test="queryParams.courseName != null and queryParams.courseName.length > 0">
+                    name like "%"#{queryParams.courseName}"%"
+                </if>
+
+                <if test="queryParams.isShow != null and queryParams.isShow != ''">
+                    and isShow=#{queryParams.isShow}
+                </if>
+            </if>
+        </where>
+    </sql>
+    <select id="findCourseCount" resultType="java.lang.Long">
+        select count(id) from t_course
+        <include refid="select_where"></include>
+    </select>
+    <select id="findPageList" resultType="com.itheima.mm.pojo.Course">
+        select
+        tc.id,
+        tc.name,
+        (select username from t_user where id=tc.userId) creator,
+        tc.createDate,
+        tc.isShow,
+        (select count(id) from t_catalog where courseId=tc.id) catalogQty,
+        (select count(id) from t_tag where courseId=tc.id) tagQty,
+        (select count(id) from t_question where courseId=tc.id) questionQty
+        from
+        t_course tc
+        <include refid="select_where"></include>
+        limit #{offset},#{pageSize}
+
+    </select>
+
+</mapper>
