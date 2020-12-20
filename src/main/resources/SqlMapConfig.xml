@@ -6,6 +6,13 @@
       先加载内部属性，再加载外部属性，如果有同名属性会覆盖。
    -->
     <properties resource="db.properties"/>
+    <!--
+       全局懒加载
+   -->
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
     <!-- 配置pojo别名 -->
     <typeAliases>
         <!-- 扫描包的形式创建别名，别名就是类名，不区分大小写 -->

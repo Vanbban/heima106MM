@@ -176,7 +176,7 @@
                     // 试题id
                     id: 0,
                     // 是否精选题目
-                    is_classic: 0,
+                    isClassic: 0,
                     // 学科id
                     courseId: '',
                     // 目录id
@@ -295,8 +295,8 @@
             this.initIndustrys();
 
             // 是否精选题目
-            let is_classic = parseInt(this.getUrlParam("is_classic"), 10);
-            this.formData.is_classic = is_classic;
+            let isClassic = parseInt(this.getUrlParam("is_classic"), 10);
+            this.formData.isClassic = isClassic;
         },
         methods: {
             //获取url参数
@@ -479,101 +479,17 @@
             // 学科下拉列表
             initCourses() {
                 let t = this;
-                let response = {
-                    data:{
-                        "flag": true,
-                        "message": "获取列表成功",
-                        "result": [
-                            {
-                                "catalogList": [
-                                    {
-                                        "id": 1,
-                                        "name": "Java基础"
-                                    },
-                                    {
-                                        "id": 2,
-                                        "name": "JavaWeb"
-                                    },
-                                    {
-                                        "id": 3,
-                                        "name": "Spring MVC"
-                                    },
-                                    {
-                                        "id": 4,
-                                        "name": "Spring boot"
-                                    },
-                                    {
-                                        "id": 8,
-                                        "name": "进程线程"
-                                    },
-                                    {
-                                        "id": 13,
-                                        "name": "aaaa"
-                                    }
-                                ],
-                                "tagList": [
-                                    {
-                                        "id": 1,
-                                        "name": "String字符串"
-                                    },
-                                    {
-                                        "id": 2,
-                                        "name": "Java类与对象"
-                                    },
-                                    {
-                                        "id": 3,
-                                        "name": "Servlet"
-                                    },
-                                    {
-                                        "id": 4,
-                                        "name": "多线程"
-                                    }
-                                ],
-                                "id": 1,
-                                "name": "Java"
-                            },
-                            {
-                                "catalogList": [
-                                    {
-                                        "id": 5,
-                                        "name": "Python基础"
-                                    },
-                                    {
-                                        "id": 6,
-                                        "name": "函数编程"
-                                    },
-                                    {
-                                        "id": 7,
-                                        "name": "面向对象编程"
-                                    }
-                                ],
-                                "id": 2,
-                                "name": "Python"
-                            },
-                            {
-                                "catalogList": [],
-                                "id": 3,
-                                "name": "大数据"
-                            },
-                            {
-                                "catalogList": [],
-                                "id": 4,
-                                "name": "Php"
-                            },
-                            {
-                                "catalogList": [],
-                                "id": 8,
-                                "name": "888"
-                            },
-                            {
-                                "catalogList": [],
-                                "id": 9,
-                                "name": "2"
-                            }
-                        ]
+                axios.get("../course/findAll.do?status=0").then(response=>{
+                    if (response.data.flag) {
+                        this.courses = response.data.result
+                    }else {
+                        this.$message({
+                            type:"error",
+                            message:response.data.message,
+                            showClose:true
+                        })
                     }
-                }
-                t.courses = response.data.result;
+                })
             },
             changeCourse() {
                 let courseId = this.formData.courseId;
@@ -825,10 +741,28 @@
             },
             // 自定义上传的实现
             handleHttpRequest(params, index) {
+                //在这里做文件上传
                 let file = params.file;
 
                 let formData = new FormData();
                 formData.append(file.name, file);
+                axios.post("../common/uploadFile.do",formData).then(response=>{
+                    if (response.data.flag) {
+                        this.$message({
+                            type:"success",
+                            message:response.data.message,
+                            showClose:true
+                        })
+
+                        this.formData.questionItemList[index].imgUrl = response.data.result
+                    }else {
+                        this.$message({
+                            type:"error",
+                            message:response.data.message,
+                            showClose:true
+                        })
+                    }
+                })
                 let response = {};
             },
             // 提交表单
@@ -852,15 +786,15 @@
                     });
                     // TODO 会有新增的方向
                     //industryList.push(industry);
-					if(industry){
-						industryList.push(industry);
-					}else{
-						industryList.push({
-							id:0,
-							name:industryId
-						});
-					}
-					
+                    if(industry){
+                        industryList.push(industry);
+                    }else{
+                        industryList.push({
+                            id:0,
+                            name:industryId
+                        });
+                    }
+
                 });
                 let company = {
                     id: formData.companyId,
@@ -876,40 +810,57 @@
                 // 包装标签相关数据
                 let tags = this.tags;
                 let tagList = [];
+                //标签的id数组
                 formData.tagIds.forEach(tagId => {
                     let tag = tags.find(tag => {
                         return tag.id === tagId;
                     });
                     // TODO 会有新增的标签
                     //tagList.push(tag);
-					if(tag){
-						tagList.push(tag);
-					}else{
-						tagList.push({
-							id:0,
-							name:tagId
-						});
-					}
+                    if(tag){
+                        tagList.push(tag);
+                    }else{
+                        tagList.push({
+                            id:0,
+                            name:tagId
+                        });
+                    }
                 });
                 formData.tagList = tagList;
                 console.log("新增更新题库请求参数：");
                 console.log(this.formData);
-                this.$message.success("操作成功");
-                // 返回到上一级
-                if (!this.formData.is_classic) {
-                    setTimeout(function () {
-                            //window.location.href = "questionBasicList.html";
+                //发送异步请求
+                axios.post("../question/addOrUpdate.do",formData).then(response=>{
+                    if (response.data.flag) {
+                        this.$message({
+                            type:"success",
+                            message:response.data.message,
+                            showClose:true
+                        })
+                        // 返回到上一级
+                        if (!this.formData.isClassic) {
+                            setTimeout(function () {
+                                    window.location.href = "questionBasicList.html";
+                                }
+                                , 1000);
+                        } else {
+                            setTimeout(function () {
+                                window.location.href = "questionClassicList.html";
+                            }, 1000);
                         }
-                        , 1000);
-                } else {
-                    setTimeout(function () {
-                        //window.location.href = "questionClassicList.html";
-                    }, 1000);
-                }
+                    }else {
+                        this.$message({
+                            type:"error",
+                            message:response.data.message,
+                            showClose:true
+                        })
+                    }
+                })
+
             },
             // 取消提交
             cancelItem() {
-                if (!this.formData.is_classic) {
+                if (!this.formData.isClassic) {
                     window.location.href = "questionBasicList.html";
                 } else {
                     window.location.href = "questionClassicList.html";

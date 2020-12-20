@@ -55,4 +55,15 @@
 
     </select>
 
+
+    <select id="findAll" resultType="com.itheima.mm.pojo.Course">
+    select
+    id,name from t_course
+    <where>
+        <if test="status != null and status != ''">
+            isShow=#{status}
+        </if>
+    </where>
+    </select>
+
 </mapper>

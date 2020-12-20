@@ -7,6 +7,8 @@ import com.itheima.mm.exceptions.AddSameCourseException;
 import com.itheima.mm.pojo.Course;
 import com.itheima.mm.utils.SqlSessionFactoryUtils;
 import org.apache.ibatis.session.SqlSession;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -66,6 +68,16 @@ public class CourseService {
         CourseDao courseDao = sqlSession.getMapper(CourseDao.class);
         Long total=courseDao.findCourseCount(queryPageBean);
         List<Course>courseList=courseDao.findPageList(queryPageBean);
+        SqlSessionFactoryUtils.commitAndClose(sqlSession);
         return new PageResult(total,courseList);
+    }
+
+    public List<Course> findAll(String status) throws Exception {
+        SqlSession sqlSession = SqlSessionFactoryUtils.openSqlSession();
+        CourseDao courseDao= sqlSession.getMapper(CourseDao.class);
+
+        List<Course> courseList=courseDao.findAll(status);
+        SqlSessionFactoryUtils.commitAndClose(sqlSession);
+        return courseList;
     }
 }
