@@ -9,5 +9,8 @@
         <module name="mm_backend_management" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="mm_wx_api" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -17,7 +17,7 @@
     </delete>
 
     <select id="findByName" parameterType="string" resultType="com.itheima.mm.pojo.Course">
-        select * from t_course
+        select * from t_course where name=#{name}
 
     </select>
 
