@@ -54,9 +54,13 @@
         limit #{offset},#{pageSize}
 
     </select>
+    <resultMap id="CourseMap" type="Course" autoMapping="true">
+        <id column="id" property="id"></id>
+        <collection property="catalogList" column="id" select="com.itheima.mm.dao.CatalogDao.findCatalogListByCourseId"></collection>
+        <collection property="tagList" column="id" select="com.itheima.mm.dao.TagDao.findTagListByCourseId"></collection>
+    </resultMap>
 
-
-    <select id="findAll" resultType="com.itheima.mm.pojo.Course">
+    <select id="findAll" resultMap="CourseMap" parameterType="string">
     select
     id,name from t_course
     <where>

@@ -8,4 +8,7 @@
     <select id="findCountByCourseId" resultType="java.lang.Long">
         select count(id) from t_catalog where courseId=#{id}
     </select>
+    <select id="findCatalogListByCourseId" resultType="com.itheima.mm.pojo.Catalog">
+        select  id,name from t_catalog where courseId=#{courseId}
+    </select>
 </mapper>

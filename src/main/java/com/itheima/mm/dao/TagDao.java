@@ -1,5 +1,6 @@
 package com.itheima.mm.dao;
 
+import com.itheima.mm.pojo.Catalog;
 import com.itheima.mm.pojo.Tag;
 
 import java.util.List;
@@ -11,4 +12,7 @@ import java.util.List;
 public interface TagDao {
     Long findCountByCourseId(Integer id);
 
+    List<Tag> findTagListByCourseId(Integer courseId);
+
+    void addQuestionTag(Integer tagId, Integer id);
 }

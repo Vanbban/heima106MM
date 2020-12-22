@@ -15,4 +15,6 @@ public interface QuestionDao {
     Long findBasicCount(QueryPageBean queryPageBean);
 
     List<Question> findBasicList(QueryPageBean queryPageBean);
+
+    void add(Question question);
 }

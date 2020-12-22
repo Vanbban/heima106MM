@@ -57,6 +57,7 @@ public class Question {
 	  private List<Tag> tags;              // 标签
 	  private Integer memberId;		 // 会员Id
 	  private List<QuestionItem> selection; // 选项
+	  private  List<Integer>   tagIds;       //
 
 	/**
 	 * 为选项按字母编号
